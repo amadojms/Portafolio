@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Barba Uff</title>
+    <script src="https://unpkg.com/@barba/core@next"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.js"
+        integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
+</head>
+
+<body data-barba="wrapper">
+    <main data-barba="container" id="containerbarba" data-barba-namespace="home">
+        <!-- put here the content you wish to change between your pages -->
+        <!-- <div id="page1" onclick="change('page1')">
+            Pagina 1
+        </div>
+        <div id="page2">
+            Pagina 2
+        </div>
+        <div id="page3">
+            Pagina 3
+        </div> -->
+        <div class="container">
+                <div class="row">
+                    <ul class="nav navbar-nav">
+                        <li><a href="home.html" class="historyAPI">Home</a></li>
+                        <li><a href="about.html" class="historyAPI">About</a></li>
+                        <li><a href="contact.html" class="historyAPI">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="well">
+                            Click on Links above to see history API usage using <code>pushState</code> method.
+                        </div>
+                    </div>
+                    <div class="row">    
+                        <div class="jumbotron" id="contentHolder">
+                            <h1>Home!</h1>
+                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </main>
+
+</body>
+<script>
+    // defines your routes
+    // const routes = [{
+    //   path: '/index',
+    //   name: 'home'
+    // }, {
+    //   path: '/index2',
+    //   name: 'home2'
+    // }];
+
+    // // tells barba to use the router with your custom routes
+    // barba.use(barbaRouter, {
+    //   routes,
+    // });
+
+    // barba.init();
+
+    barba.init({
+        transitions: [{
+            leave({
+                current,
+                next,
+                trigger
+            }) {
+                // Do something with `current.container` for your leave transition
+                // then return a promise or use `this.async()`
+            },
+            enter({
+                current,
+                next,
+                trigger
+            }) {
+                // Do something with `next.container` for your enter transition
+                // then return a promise or use `this.async()`
+            },
+        }, ],
+    });
+
+    // Dummy example to illustrate rules and hooks…
+    barba.init({
+        transitions: [{
+            name: 'dummy transitions',
+            // Apply only when leaving `[data-barba-namespace="home"]`.
+            namespace: 'home',
+            // Apply only when transitioning to `[data-barba-namespace="products | contact"]`.
+            to: {
+                namespace: ['products', 'contact'],
+            },
+            // Apply only if clicked link contains `.cta`.
+            custom: ({
+                    current,
+                    next,
+                    trigger
+                }) =>
+                trigger.classList && trigger.classList.contains('cta'),
+            // Do leave and enter concurrently.
+            sync: true,
+            // Available hooks…
+            beforeAppear() {
+
+            },
+            appear() {
+                console.log("aparece");
+                return new Promise(resolve => {
+                    callbackAnimation(data.current.container, {
+                        onComplete: () => {
+                            resolve();
+                        },
+                    });
+                    console.log("entro");
+                });
+            },
+            afterAppear() {},
+            beforeLeave() {},
+            leave(data) {
+                console.log(data);
+            },
+            afterLeave() {},
+            beforeEnter() {},
+            enter() {},
+            afterEnter() {},
+        }, ],
+    });
+
+    function change(route) {
+        console.log(route);
+        // window.history.pushState(null, null, route);
+        // idcontainerbarba = document.getElementById("containerbarba");
+        // idcontainerbarba.a();
+        var data = $("#containerbarba").data();
+        console.log(data);
+        // window.history.pushState(null, null, route);
+    }
+    $(document).ready(function () {
+        $('.historyAPI').on('click', function (e) {
+            e.preventDefault();
+            var href = $(this).attr('href');
+
+            // Getting Content
+            getContent(href, true);
+
+            $('.historyAPI').removeClass('active');
+            $(this).addClass('active');
+        });
+        
+    })
+
+    window.addEventListener("popstate", function(e) {
+         
+         // Get State value using e.state
+
+         getContent(location.pathname, false);
+     });
+      
+     function getContent(url, addEntry) {
+         $.get(url)
+         .done(function( data ) {
+              
+             // Updating Content on Page
+             $('#contentHolder').html(data);
+              
+             if(addEntry == true) {
+                 // Add History Entry using pushState
+                 history.pushState(null, null, url); 
+             }
+              
+         });
+     }
+
+    // console.log("hey men");
+</script>
+
+</html>
